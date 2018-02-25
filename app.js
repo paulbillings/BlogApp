@@ -41,10 +41,30 @@ app.get("/", function(req, res){
 
 // index route
 app.get("/blogs", function(req, res){
-    res.render("index");
+    Blog.find({}, function(err, blogs){
+        if(err){
+            console(err);
+        } else {
+             res.render("index", {blogs: blogs});
+        }
+    })
 });
 
+// new route
+app.get("/blogs/new", function(req, res){
+    res.render("new");
+});
 
+// create route
+app.post("/blogs", function(req, res){
+    Blog.create(req.body.blog, function(err, newBlog){
+        if(err){
+            res.render("new");
+        } else {
+            res.redirect("/blogs");
+        }
+    });
+});
 
 app.listen(process.env.PORT, process.env.IP, function(){
    console.log("Blog App server has started!!");
