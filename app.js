@@ -15,8 +15,33 @@ app.use(express.static("public"));
 // so i can retrieve the data sent from a request
 app.use(bodyParser.urlencoded({extended: true}));
 
+// schema
+var blogSchema = new mongoose.Schema({
+    title: String,
+    image: String,
+    body: String,
+    created: {type: Date, default: Date.now}
+});
+
+// model
+var Blog = mongoose.model("Blog", blogSchema);
+
+// blog test example
+// Blog.create({
+//   title: "Test blog",
+//   image: "http://www.petwave.com/-/media/Images/Center/Breed/Dogs/Toy-Group/Pug/Pug-face-closeup.ashx",
+//   body: "The test blog which happens to show a cute pug :)"
+// });
+
+// ******* RESTful routes ***********
+// conventional for root to show the index route
 app.get("/", function(req, res){
-    res.send("you have made it to the blog app!!!!");
+   res.redirect("/blogs"); 
+});
+
+// index route
+app.get("/blogs", function(req, res){
+    res.render("index");
 });
 
 
