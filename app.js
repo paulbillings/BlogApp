@@ -1,11 +1,13 @@
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
+var methodOverride = require("method-override");
 var express = require("express");
 var app = express();
 
 // connect to the database
 mongoose.connect("mongodb://localhost/blog_app");
 
+// APP CONFIG
 // set ejs for use on route files
 app.set("view engine", "ejs");
 
@@ -14,6 +16,9 @@ app.use(express.static("public"));
 
 // so i can retrieve the data sent from a request
 app.use(bodyParser.urlencoded({extended: true}));
+
+// so i can do put, delete requests
+app.use(methodOverride("_method"));
 
 // schema
 var blogSchema = new mongoose.Schema({
@@ -63,6 +68,39 @@ app.post("/blogs", function(req, res){
         } else {
             res.redirect("/blogs");
         }
+    });
+});
+
+// show route
+app.get("/blogs/:id", function(req, res){
+    Blog.findById(req.params.id, function(err, foundBlog){
+       if(err){
+           res.redirect("/blogs");
+       } else {
+           res.render("show", {blog: foundBlog})
+       }
+    });
+});
+
+// edit route
+app.get("/blogs/:id/edit", function(req, res){
+    Blog.findById(req.params.id, function(err, foundBlog){
+       if(err){
+          res.redirect("/blogs");
+       } else {
+          res.render("edit", {blog: foundBlog}); 
+       }
+    });
+});
+
+// update route
+app.put("/blogs/:id", function(req, res){
+    Blog.findByIdAndUpdate(req.params.id, req.body.blog, function(err, updatedBlog){
+       if(err){
+           res.redirect("/blogs");
+       } else {
+           res.redirect("/blogs/" + req.params.id);
+       }
     });
 });
 
